@@ -1,15 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-mkdir -p _build/html
-
-curl -LO https://downloads.rclone.org/rclone-current-linux-amd64.zip
-unzip rclone-current-linux-amd64.zip
-rclone=rclone-*/rclone
-
-export RCLONE_CONFIG_AMS3_TYPE=s3
-export RCLONE_CONFIG_AMS3_ENDPOINT=ams3.digitaloceanspaces.com
-$rclone sync -v ams3:syncthing-docs/ _build/html/
+# Download pre-rendered / old versions of docs if this is a production (main
+# branch) build.
+#if [[ ${CONTEXT:-} == "production" ]]; then
+    mkdir -p _build
+    git clone https://github.com/syncthing/docs-pre-rendered.git _build/html
+    rm -rf _build/html/.git
+#fi
 
 make html
 make man
